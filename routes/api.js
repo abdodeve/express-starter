@@ -1,5 +1,6 @@
-const productController = require('../Controllers/ProductController');
 const TodoController = require('../Controllers/TodoController');
+const UserController = require('../Controllers/UserController');
+
 
 module.exports = function(express) {
 
@@ -7,26 +8,25 @@ module.exports = function(express) {
 
     /*
     |--------------------------------------------------------------------------
-    |  Product Routes
-    |--------------------------------------------------------------------------
-    */
-    router.get('/product/fetch', productController.fetch);
-    router.get('/product/:id/single', productController.single);
-    router.post('/product/create', productController.create);
-    router.put('/product/:id/update', productController.update);
-    router.delete('/product/:id/delete', productController.delete);
-    router.get('/product/test', productController.test);
-
-    /*
-    |--------------------------------------------------------------------------
     |  Todo Routes
     |--------------------------------------------------------------------------
     */
-    router.get('/todo', TodoController.fetch);
-    router.get('/todo/:id', TodoController.single);
-    router.post('/todo', TodoController.create);
-    router.put('/todo/:id', TodoController.update);
-    router.delete('/todo/:id', TodoController.delete);
+    router.get('/todos', TodoController.fetch);
+    router.get('/todos/:id', TodoController.single);
+    router.post('/todos', TodoController.create);
+    router.put('/todos/:id', TodoController.update);
+    router.delete('/todos/:id', TodoController.delete);
+
+    /*
+    |--------------------------------------------------------------------------
+    |  User Routes
+    |--------------------------------------------------------------------------
+    */
+    router.get('/users', UserController.fetch);
+    router.get('/users/:id', UserController.single);
+    router.post('/users', UserController.create);
+    router.put('/users/:id', UserController.update);
+    router.delete('/users/:id', UserController.delete);
 
     
     return router ;

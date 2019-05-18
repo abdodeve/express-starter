@@ -1,29 +1,30 @@
 const TodoModel = require('../Models/TodoModel');
 
+
 /**
- * GET /todo
+ * GET /api/todos
  * Get All Todos
  */
 exports.fetch = function (req, res) {
-    TodoModel.find({}, function (err, product) {
+    TodoModel.find({}, function (err, data) {
         if (err) return next(err);
-        res.json({"success": true, "product": product});
+        res.json({"success": true, "todos": data});
     })
 };
 
 /**
- * GET /todo/:id
+ * GET /api/todos/:id
  * Get Single Todo
  */
 exports.single = function (req, res) {
     TodoModel.findById(req.params.id, function (err, data) {
         if (err) return next(err);
-        res.json({"success": true, "data": data});
+        res.json({"success": true, "todo": data});
     })
 };
 
 /**
- * POST /todo
+ * POST /api/todos
  * Create new Todo
  */
 exports.create = function (req, res) {
@@ -44,23 +45,23 @@ exports.create = function (req, res) {
 };
 
 /**
- * PUT /todo
+ * PUT /api/todos
  * Update Todo
  */
 exports.update = function (req, res, next) {
-    TodoModel.findByIdAndUpdate(req.params.id, {$set: req.body}, function (err, product) {
+    TodoModel.findByIdAndUpdate(req.params.id, req.body, function (err, todo) {
         if (err) return next(err);
-        res.json({"success": true, "message": "Product udpated."});
+        res.json({"success": true, "message": "Todo upated"});
     });
 };
 
 /**
- * DELETE /todo
+ * DELETE /api/todos
  * Delete todo
  */
 exports.delete = function (req, res) {
     TodoModel.findByIdAndRemove(req.params.id, function (err) {
         if (err) return next(err);
-        res.json({"success": true, "message": "Deleted successfully!"});
+        res.json({"success": true, "message": "Todo deleted"});
     })
 };
