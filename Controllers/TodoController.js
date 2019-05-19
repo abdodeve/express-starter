@@ -59,7 +59,7 @@ exports.update = function (req, res, next) {
  * DELETE /api/todos
  * Delete todo
  */
-exports.delete = function (req, res) {
+exports.delete = function (req, res, next) {
     TodoModel.findByIdAndRemove(req.params.id, function (err) {
         if (err) return next(err);
         res.json({"success": true, "message": "Todo deleted"});

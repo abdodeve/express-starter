@@ -1,4 +1,6 @@
 const UserModel = require('../Models/UserModel');
+const jwt = require('jsonwebtoken');
+
 // const crypto = require('crypto');
 
 
@@ -61,9 +63,33 @@ exports.update = function (req, res, next) {
  * DELETE /api/users
  * Delete User
  */
-exports.delete = function (req, res) {
+exports.delete = function (req, res, next) {
     UserModel.findByIdAndRemove(req.params.id, function (err) {
         if (err) return next(err);
         res.json({"success": true, "message": "User deleted"});
     })
 };
+
+
+/**
+ * GET /api/login
+ * Login User
+ */
+exports.login = async function (req, res, next) {
+    let username = req.body.username;
+    let password = req.body.password;
+    // For the given username fetch user from DB
+    let getUser = await UserModel.findOne({ username: username });
+
+    // Controlls
+    if( !getUser || getUser.username != username || getUser.password != password ) 
+            return res.status(403).json({error:'invalid_credentials', message: 'Username and/or password are incorrect'});
+
+    let token = jwt.sign( {userData: { username: username }}, 'passphrase');
+    res.json({
+                success: true,
+                message: 'Authentication successful!',
+                token: token
+            });
+
+}

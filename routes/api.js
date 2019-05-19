@@ -22,12 +22,12 @@ module.exports = function(express) {
     |  User Routes
     |--------------------------------------------------------------------------
     */
+    router.get('/login', UserController.login);
     router.get('/users', UserController.fetch);
     router.get('/users/:id', UserController.single);
     router.post('/users', UserController.create);
     router.put('/users/:id', UserController.update);
     router.delete('/users/:id', UserController.delete);
-
-    
+   
     return router ;
 }
