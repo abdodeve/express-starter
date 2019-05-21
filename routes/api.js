@@ -28,6 +28,7 @@ module.exports = function(express) {
     router.post('/users', UserController.create);
     router.put('/users/:id', UserController.update);
     router.delete('/users/:id', UserController.delete);
+    router.put('/user/reset/:id', UserController.resetPassword);
    
     return router ;
 }

@@ -1,5 +1,7 @@
 const UserModel = require('../Models/UserModel');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+
 
 // const crypto = require('crypto');
 
@@ -31,11 +33,14 @@ exports.single = function (req, res, next) {
  * Create new User
  */
 exports.create = function (req, res, next) {
+    // Hash password
+    var hash = bcrypt.hashSync(req.body.password, 10);
+
     // Prepare object
     let userModel = new UserModel({
             name: req.body.name,
             username: req.body.username,
-            password: req.body.password
+            password: hash
         }
     );
 
@@ -47,20 +52,23 @@ exports.create = function (req, res, next) {
 };
 
 /**
- * PUT /api/users
+ * PUT /api/users/:id
  * Update User
  */
 exports.update = function (req, res, next) {
+    UserModel.findById(req.params.id, req.body, function (err, user) {
+        if (err) return next(err);
 
-  UserModel.findByIdAndUpdate(req.params.id, req.body, function (err, user) {
-    if (err) return next(err);
-    res.json({"success": true, "message": "User upated"});
-  });
+        user.name = req.body.name;
+        user.username = req.body.username;
+        user.save();
+        return res.json({"success": true, "message": "User upated"});
+    });
 
 };
 
 /**
- * DELETE /api/users
+ * DELETE /api/users/:id
  * Delete User
  */
 exports.delete = function (req, res, next) {
@@ -76,20 +84,46 @@ exports.delete = function (req, res, next) {
  * Login User
  */
 exports.login = async function (req, res, next) {
-    let username = req.body.username;
-    let password = req.body.password;
-    // For the given username fetch user from DB
-    let getUser = await UserModel.findOne({ username: username });
 
-    // Controlls
-    if( !getUser || getUser.username != username || getUser.password != password ) 
+    // For the given username fetch user from DB
+    let getUser = await UserModel.findOne({ username: req.body.username });
+
+     // Check user existance
+     if( !getUser ) 
+        return res.status(404).json({error:'user_not_exist', message: 'User not found'});
+
+    // Compare the passwords
+    const isMatch  = await bcrypt.compare(req.body.password, getUser.password);
+
+    // Check passowrd matching
+    if( !isMatch ) 
             return res.status(403).json({error:'invalid_credentials', message: 'Username and/or password are incorrect'});
 
-    let token = jwt.sign( {userData: { username: username }}, 'passphrase');
+    // Generate token
+    let token = jwt.sign( {userData: { username: getUser.username }}, process.env.JWT_SECRET_KEY);
+
     res.json({
                 success: true,
                 message: 'Authentication successful!',
                 token: token
-            });
+    });
 
 }
+
+/**
+ * PUT /api/user/reset/:id
+ * Reset user password
+ */
+exports.resetPassword = function (req, res, next) {
+    // Hash password
+    var hash = bcrypt.hashSync(req.body.password, 10);
+
+    UserModel.findById(req.params.id, req.body, function (err, user) {
+        if (err) return next(err);
+
+        user.password = hash ;
+        user.save();
+        return res.json({"success": true, "message": "User password reseted"});
+    });
+
+};
