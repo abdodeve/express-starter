@@ -11,6 +11,10 @@ const passport = require('passport');
 const expressValidator = require('express-validator');
 const DB = require('./config/database');
 const api_routes = require("./routes/api")(express);
+const morgan = require('morgan');
+const httpError = require('http-errors');
+
+
 /**
  * Middlewares
  */
@@ -57,6 +61,7 @@ app.disable('x-powered-by');
 |  
 |  
 */
+
 // Compress Body
 app.use(compression());
 
@@ -74,34 +79,36 @@ app.use(EnablingCorsMiddleware);
 // Routes
 app.use('/api', api_routes);
 
-/**
- * Switch between dev/prod
- */
-if (process.env.NODE_ENV === 'development') {
-  // only use in development
-  app.use(errorHandler());
-  app.use(ServerErrorMiddleware);   // Show detail about 500 error
-} else {
-  app.use((err, req, res, next) => {
-    console.error(err);
-    res.status(500).json('Server Error');
-  });
-};
 
 
-app.get('/privatRessource', jwtMiddleware.checkToken, (req, res) => {
+
+
+//, jwtMiddleware.checkToken
+app.get('/privatRessource', (req, res) => {
   console.log( 'last middleware', res.locals.userData );
   res.json({'success': 'true','message': 'you can access' });
 });
 
 
 
+/**
+ * Switch between dev/prod 
+ * [ERROR HANDLER]
+ */
+if (process.env.NODE_ENV === 'development') {
+  // only use in development
+  app.use(ServerErrorMiddleware);   // Show detail about 500 error
+  app.use(morgan('dev')); // Show all logs in console
+  app.use(errorHandler());
+} else {
+  app.use((err, req, res, next) => {
+    console.error(err);
+    res.status(500).json({error: 'Server Error'});
+  });
+};
 
 
-
-
-
-// 404 && 500 errors to json
+// catch 404 errors to json
 app.use(NotFoundMiddleware);
 /*
  ***************************************
