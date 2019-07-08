@@ -18,14 +18,11 @@ Features
 
 - MVC Project Structure
 - Node.js clusters support
-- Contact Form (powered by Mailgun, Sendgrid or Mandrill)
 - **Account Management**
- - Gravatar
  - Profile Details
  - Change Password
  - Forgot Password
  - Reset Password
- - Link multiple OAuth strategies to one account
  - Delete Account
 
 Prerequisites
@@ -52,7 +49,7 @@ The easiest way to get started is to clone the repository:
 
 ```bash
 # Get the latest snapshot
-git clone https://github.com/sahat/hackathon-starter.git myproject
+git clone https://github.com/abdodeve/express-starter.git myproject
 
 # Change directory
 cd myproject
